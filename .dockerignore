@@ -1,0 +1,16 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+.git
+.gitignore
+*.pdf
+scrape_catalog.py
+prepare_catalog.py
+shl_catalog_raw.json
+test_*.py
+check_api.py
+debug_llm.py
+test_model.py
+GenAI_SampleConversations/

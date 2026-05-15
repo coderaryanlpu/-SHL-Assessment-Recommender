@@ -1,0 +1,37 @@
+# ── Virtual environment ───────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── Environment variables (NEVER commit your API keys) ────────────────────────
+.env
+*.env
+
+# ── Python cache ──────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ── Dev/scraping scripts (not needed in production) ───────────────────────────
+scrape_catalog.py
+prepare_catalog.py
+check_api.py
+debug_llm.py
+test_model.py
+
+# ── Raw/intermediate data (catalog.json IS needed, raw is not) ────────────────
+shl_catalog_raw.json
+
+# ── Test files (optional: keep if you want CI to run them) ────────────────────
+# test_*.py
+
+# ── Assignment PDF (large binary, not needed in repo) ─────────────────────────
+*.pdf
+
+# ── IDE & OS files ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
