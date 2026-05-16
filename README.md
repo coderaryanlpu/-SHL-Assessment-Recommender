@@ -1,6 +1,6 @@
 # SHL Assessment Recommender
 
-A production-ready **conversational AI agent** that helps hiring managers find the right SHL assessments from the official SHL product catalog. Built with a stateless FastAPI service, BM25 keyword retrieval, and a free LLM via OpenRouter.
+A production-ready **conversational AI agent** that helps hiring managers find the right SHL assessments from the official SHL product catalog. Built with a stateless FastAPI service, BM25 keyword retrieval, and a live-benchmarked free LLM fallback chain via OpenRouter.
 
 ---
 
@@ -56,7 +56,8 @@ catalog.json (377 SHL assessments)
 | Component | Technology |
 |---|---|
 | **Web Framework** | FastAPI + Uvicorn |
-| **LLM** | DeepSeek V4 Flash via [OpenRouter](https://openrouter.ai) (free tier) |
+| **LLM** | `openai/gpt-oss-20b:free` via [OpenRouter](https://openrouter.ai) (free tier, ~3s/turn) |
+| **LLM Fallbacks** | `minimax/minimax-m2.5:free` → `openai/gpt-oss-120b:free` (auto-cycle on 429) |
 | **Retrieval** | Custom BM25 / TF-IDF in pure Python + NumPy |
 | **Catalog** | 377 SHL assessments scraped and structured into `catalog.json` |
 | **Validation** | Double-pass: JSON extraction + URL/name cross-check against catalog |
@@ -159,10 +160,12 @@ The API will be available at:
 
 ### Optional: Change the LLM Model
 
-The default model is `deepseek/deepseek-v4-flash:free`. You can override it with any free model from [openrouter.ai/models](https://openrouter.ai/models?q=:free):
+The default model is `openai/gpt-oss-20b:free` (~3–5s response time, benchmarked fastest free model).
+The agent automatically falls back through `minimax/minimax-m2.5:free` → `openai/gpt-oss-120b:free` if rate-limited.
+You can override with any free model from [openrouter.ai/models](https://openrouter.ai/models?q=:free):
 
 ```powershell
-$env:OPENROUTER_MODEL="google/gemma-3-27b-it:free"
+$env:OPENROUTER_MODEL="openai/gpt-oss-120b:free"
 ```
 
 ---
@@ -267,7 +270,7 @@ uvicorn main:app --host 0.0.0.0 --port $PORT
 | Variable | Required | Description |
 |---|---|---|
 | `OPENROUTER_API_KEY` | ✅ Yes | Your OpenRouter API key |
-| `OPENROUTER_MODEL` | ❌ Optional | Override default model (default: `deepseek/deepseek-v4-flash:free`) |
+| `OPENROUTER_MODEL` | ❌ Optional | Override default model (default: `openai/gpt-oss-20b:free`) |
 
 ### Example: Deploy to Render
 
@@ -289,9 +292,18 @@ The SHL catalog is small (377 items) and **keyword-dense** — job titles and sk
 - **Instant cold-start** — index builds in memory on server startup (~50ms)
 - **No embedding API costs**
 
-### Why OpenRouter (Free Tier)?
+### Why OpenRouter Free Tier + Fallback Chain?
 
-OpenRouter provides access to multiple capable free LLMs (DeepSeek, Gemma, Llama, etc.) through a single OpenAI-compatible API. No credit card required. The `deepseek/deepseek-v4-flash:free` model demonstrates strong JSON instruction-following, which is critical for the strict output schema.
+OpenRouter provides access to 24+ free LLMs through a single OpenAI-compatible API. A live parallel benchmark was run against all available free models to find the fastest responding ones:
+
+| Model | Benchmark Time | JSON Quality |
+|---|---|---|
+| `openai/gpt-oss-20b:free` | ~3.1s ✅ | Perfect |
+| `minimax/minimax-m2.5:free` | ~3.2s ✅ | Perfect |
+| `openai/gpt-oss-120b:free` | ~4.2s ✅ | Perfect |
+| 21 others (DeepSeek, Llama, Gemma, Qwen…) | 429 rate-limited ❌ | — |
+
+The agent automatically cycles through the fallback chain on any 429 or 402 error. No credit card is required.
 
 ### Constraint-First Prompting
 

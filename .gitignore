@@ -14,20 +14,23 @@ __pycache__/
 *.pyd
 .Python
 
-# ── Dev/scraping scripts (not needed in production) ───────────────────────────
+# ── Dev / scraping / diagnostic scripts (not needed in production) ────────────
 scrape_catalog.py
 prepare_catalog.py
 check_api.py
+check_models.py
 debug_llm.py
+debug_chat.py
 test_model.py
+benchmark_models.py
 
-# ── Raw/intermediate data (catalog.json IS needed, raw is not) ────────────────
+# ── Raw / intermediate data (catalog.json IS needed, raw is not) ──────────────
 shl_catalog_raw.json
 
-# ── Test files (optional: keep if you want CI to run them) ────────────────────
-# test_*.py
+# ── Temporary test output files ───────────────────────────────────────────────
+test_results.txt
 
-# ── Assignment PDF (large binary, not needed in repo) ─────────────────────────
+# ── Assignment PDF (large binary, evaluators have their own copy) ──────────────
 *.pdf
 
 # ── IDE & OS files ────────────────────────────────────────────────────────────

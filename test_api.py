@@ -3,7 +3,7 @@ import json
 
 def test_health():
     print("Testing /health...")
-    resp = requests.get("http://localhost:8000/health")
+    resp = requests.get("http://localhost:8001/health")
     print(f"Status: {resp.status_code}")
     print(resp.json())
     print()
@@ -15,7 +15,7 @@ def test_chat():
             {"role": "user", "content": "I am hiring a Java developer. Need an assessment."}
         ]
     }
-    resp = requests.post("http://localhost:8000/chat", json=payload)
+    resp = requests.post("http://localhost:8001/chat", json=payload)
     print(f"Status: {resp.status_code}")
     try:
         data = resp.json()
